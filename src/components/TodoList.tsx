@@ -77,13 +77,13 @@ const TodoList: React.FC<ErrorMessagesProps> = ({ setError }) => {
 
   const allCompleted = todos.length > 0 && todos.every(todo => todo.completed);
 
-  const visibleTodos = todos.filter(todo => {
+  const visibleTodos = todos.filter(d => {
     if (filter === Filter.Active) {
-      return !todo.completed;
+      return !d.completed;
     }
 
     if (filter === Filter.Completed) {
-      return todo.completed;
+      return d.completed;
     }
 
     return true;
@@ -92,23 +92,29 @@ const TodoList: React.FC<ErrorMessagesProps> = ({ setError }) => {
   const handleToggleAll = async () => {
     const newStatus = !allCompleted;
 
-    const todosToUpdate = todos.filter(todo => todo.completed !== newStatus);
+    const todosToUpdate = todos.filter(t => t.completed !== newStatus);
+
+    setTodos(prev =>
+      prev.map(t => ({
+        ...t,
+        loading: todosToUpdate.some(u => u.id === t.id),
+      })),
+    );
 
     try {
       await Promise.all(
-        todosToUpdate.map(todo =>
-          updateTodo(todo.id, { completed: newStatus }),
+        todosToUpdate.map(tod =>
+          updateTodo(tod.id as number, { completed: newStatus }),
         ),
       );
 
       setTodos(prev =>
-      prev.map(todo => ({
-        ...todo,
-        completed: newStatus,
-      }))
-    );
+        prev.map(a => ({ ...a, completed: newStatus, loading: false })),
+      );
     } catch {
       setError(ErrorMessagesNotification.UPDATE);
+
+      setTodos(prev => prev.map(b => ({ ...b, loading: false })));
     }
   };
 
@@ -120,6 +126,7 @@ const TodoList: React.FC<ErrorMessagesProps> = ({ setError }) => {
         setError={setError}
         inputRef={inputRef}
         onToggleAll={handleToggleAll}
+        hasTodos={todos.length > 0}
       />
       <section className="todoapp__main" data-cy="TodoList">
         {visibleTodos.map(todo => (

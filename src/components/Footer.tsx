@@ -50,8 +50,8 @@ const Footer: React.FC<FilterBarProps> = ({
     await Promise.all(
       completedTodos.map(async todo => {
         try {
-          await deleteTodo(todo.id);
-          successfullyDeletedIds.push(todo.id);
+          await deleteTodo(todo.id as number);
+          successfullyDeletedIds.push(todo.id as number);
         } catch (error) {
           hasError = true;
         }
@@ -59,7 +59,7 @@ const Footer: React.FC<FilterBarProps> = ({
     );
 
     setTodos(prev =>
-      prev.filter(todo => !successfullyDeletedIds.includes(todo.id)),
+      prev.filter(todo => !successfullyDeletedIds.includes(todo.id as number)),
     );
 
     if (hasError) {

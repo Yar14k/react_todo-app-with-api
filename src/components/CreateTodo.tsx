@@ -8,6 +8,7 @@ type Props = {
   setError: (error: ErrorMessagesNotification | null) => void;
   inputRef: React.RefObject<HTMLInputElement>;
   onToggleAll: () => void;
+  hasTodos: boolean;
 };
 
 const CreateTodo: React.FC<Props> = ({
@@ -16,6 +17,7 @@ const CreateTodo: React.FC<Props> = ({
   setError,
   inputRef,
   onToggleAll,
+  hasTodos,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [todo, setTodo] = useState('');
@@ -53,12 +55,16 @@ const CreateTodo: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      <button
-        type="button"
-        className={classNames('todoapp__toggle-all', { active: allCompleted })}
-        data-cy="ToggleAllButton"
-        onClick={onToggleAll}
-      />
+      {hasTodos && (
+        <button
+          type="button"
+          className={classNames('todoapp__toggle-all', {
+            active: allCompleted,
+          })}
+          data-cy="ToggleAllButton"
+          onClick={onToggleAll}
+        />
+      )}
 
       <form onSubmit={handleSubmit}>
         <input
